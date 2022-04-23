@@ -91,7 +91,8 @@ instruction_type_counts = df[df['instruction_type'].isin(
         'CacheRootBanks',
         'CachePerpMarkets',
         'CachePrices',
-        'UpdateFunding'
+        'UpdateFunding',
+        'ConsumeEvents'
         ]
     )].groupby('instruction_type').agg('nunique')['transaction.signature'].sort_values(ascending=False).reset_index()
 
