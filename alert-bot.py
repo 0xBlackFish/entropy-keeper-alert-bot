@@ -107,7 +107,7 @@ else:
         webhook = DiscordWebhook(url=url, rate_limit_retry=True)
 
         # create embed object for webhook
-        embed = DiscordEmbed(title='Keeper Alert - Period {} UTC to {} UTC'.format(after, before), color='DE2900')
+        embed = DiscordEmbed(title='Keeper Alert - Period {} UTC to {} UTC. [Become a keeper here!](https://github.com/Friktion-Labs/entropy-keeper)'.format(after, before), color='DE2900')
 
         # add fields to embed
         embed.add_embed_field(name='Instruction Type', value=instructionType['instruction_type'], inline=False)
