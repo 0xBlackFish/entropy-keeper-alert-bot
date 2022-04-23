@@ -64,7 +64,7 @@ after = (datetime.now() - timedelta(minutes=10)).strftime('%Y-%m-%dT%H:%M%SZ')
 
 
 # execute query and store results in dataframe
-result = run_query(query % (after, before))
+result = run_query(query % after, before)
 df = pd.json_normalize(result['data']['solana']['instructions'])
 
 
