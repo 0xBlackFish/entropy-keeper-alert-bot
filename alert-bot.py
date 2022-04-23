@@ -3,6 +3,7 @@ from discord_webhook import DiscordWebhook, DiscordEmbed
 from datetime import datetime, timedelta
 import os
 import requests
+import time
 
 # define helper function to run BitQuery queries
 def run_query(query, retries=10):
