@@ -54,7 +54,7 @@ url = os.getenv('DISCORD_WEBHOOK_KEEPER_ALERT')
 
 
 # open entropy_instructions_bitQuery.txt file
-with open('entropy_instructions.txt') as query:
+with open('entropy_instructions_bitQuery.txt') as query:
     query_string = query.read()
 
 
