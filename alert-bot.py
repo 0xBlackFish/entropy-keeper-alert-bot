@@ -105,26 +105,24 @@ instruction_type_counts = df[df['instruction_type'].isin(
 instruction_type_list = ''
 
 
-# check to see if any of the instruction types has less than 50 unique transactions
-if instruction_type_counts[
+# reduce df to only offending instruction types
+instruction_type_counts_reduced = instruction_type_counts[
     ((instruction_type_counts['transaction.signature'] < 50) & (instruction_type_counts['instruction_type'].isin(['UpdateRootBank','CacheRootBanks','CachePerpMarkets','CachePrices','UpdateFunding']))) |
     ((instruction_type_counts['transaction.signature'] < 150) & (instruction_type_counts['instruction_type'] == 'ConsumeEvents'))
-    ].empty:
+    ]
+
+
+# check to see if any of the instruction types has less than 50 unique transactions or 150 for ConsumeEvents
+if instruction_type_counts_reduced.empty:
     print(datetime.now(), "All instruction types are providing adequate throughput levels")
 
 else:
-    for index, instructionType in instruction_type_counts[
-    ((instruction_type_counts['transaction.signature'] < 50) & (instruction_type_counts['instruction_type'].isin(['UpdateRootBank','CacheRootBanks','CachePerpMarkets','CachePrices','UpdateFunding']))) |
-    ((instruction_type_counts['transaction.signature'] < 150) & (instruction_type_counts['instruction_type'] == 'ConsumeEvents'))
-    ].iterrows():
+    if len(instruction_type_counts_reduced) == 1:
+            instruction_type_list = instruction_type_counts_reduced['instruction_type'] + ' - ' + str(instruction_type_counts_reduced['transaction.signature'])
+    
+    else:
+        for index, instructionType in instruction_type_counts_reduced.iterrows():
 
-        if len(instruction_type_counts[
-    ((instruction_type_counts['transaction.signature'] < 50) & (instruction_type_counts['instruction_type'].isin(['UpdateRootBank','CacheRootBanks','CachePerpMarkets','CachePrices','UpdateFunding']))) |
-    ((instruction_type_counts['transaction.signature'] < 150) & (instruction_type_counts['instruction_type'] == 'ConsumeEvents'))
-    ]) == 1:
-            instruction_type_list = instructionType['instruction_type'] + ' - ' + str(instructionType['transaction.signature'])
-        
-        else:
             if index == 0:
                 instruction_type_list += instructionType['instruction_type'] + ' - ' + str(instructionType['transaction.signature'])
             else:
