@@ -59,7 +59,7 @@ with open('entropy_instructions_bitQuery.txt') as query:
 
 
 # define start and end time window
-before = datetime.now().strftime('%Y-%m-%dT%H:%M%SZ')
+before = datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
 after = (datetime.now() - timedelta(minutes=10)).strftime('%Y-%m-%dT%H:%M%SZ')
 
 
