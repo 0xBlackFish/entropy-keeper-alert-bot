@@ -63,8 +63,8 @@ with open('entropy_instructions_bitQuery.txt') as query:
 
 
 # define start and end time window
-before = datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
-after = (datetime.now() - timedelta(minutes=10)).strftime('%Y-%m-%dT%H:%M:%SZ')
+before = (datetime.now() - timedelta(minutes=5)).strftime('%Y-%m-%dT%H:%M:%SZ')
+after = (datetime.now() - timedelta(minutes=15)).strftime('%Y-%m-%dT%H:%M:%SZ')
 
 
 # execute query and store results in dataframe
@@ -101,31 +101,46 @@ instruction_type_counts = df[df['instruction_type'].isin(
     )].groupby('instruction_type').agg('nunique')['transaction.signature'].sort_values(ascending=False).reset_index()
 
 
+# initialize instruction type - unique txn count list
+instruction_type_list = ''
+
+
 # check to see if any of the instruction types has less than 50 unique transactions
-if instruction_type_counts[instruction_type_counts['transaction.signature'] < 50].empty:
-    print(datetime.now(), "All instruction types have 50 or more unique transactions")
+if instruction_type_counts[
+    ((instruction_type_counts['transaction.signature'] < 50) & (instruction_type_counts['instruction_type'].isin(['UpdateRootBank','CacheRootBanks','CachePerpMarkets','CachePrices','UpdateFunding']))) |
+    ((instruction_type_counts['transaction.signature'] < 150) & (instruction_type_counts['instruction_type'] == 'ConsumeEvents'))
+    ].empty:
+    print(datetime.now(), "All instruction types are providing adequate throughput levels")
 
 else:
-    for index, instructionType in instruction_type_counts[instruction_type_counts['transaction.signature'] < 50].iterrows():
+    for index, instructionType in instruction_type_counts[
+    ((instruction_type_counts['transaction.signature'] < 50) & (instruction_type_counts['instruction_type'].isin(['UpdateRootBank','CacheRootBanks','CachePerpMarkets','CachePrices','UpdateFunding']))) |
+    ((instruction_type_counts['transaction.signature'] < 150) & (instruction_type_counts['instruction_type'] == 'ConsumeEvents'))
+    ].iterrows():
 
-        # establish webhook
-        webhook = DiscordWebhook(url=url, rate_limit_retry=True)
+        if index == 0:
+            instruction_type_list += instructionType['instruction_type'] + ' - ' + str(instructionType['transaction.signature'])
+        else:
+            instruction_type_list += ', ' + instructionType['instruction_type'] + ' - ' + str(instructionType['transaction.signature'])
 
-        # create embed object for webhook
-        embed = DiscordEmbed(title='Keeper Alert - Low Transaction Throughput', color='DE2900')
 
-        # create embed description
-        embed.set_description("Contribute to the community with some dissipation. Start a keeper to decentralize and increase capacity for the Entropy market by [starting an Entropy Keeper today](https://github.com/Friktion-Labs/entropy-keeper).")
+    # establish webhook
+    webhook = DiscordWebhook(url=url, rate_limit_retry=True)
 
-        # add fields to embed
-        embed.add_embed_field(name='Period Start', value='{} UTC'.format(after), inline=False)
-        embed.add_embed_field(name='Period End', value='{} UTC'.format(before), inline=False)
-        embed.add_embed_field(name='Instruction Type', value=instructionType['instruction_type'], inline=False)
-        embed.add_embed_field(name='Unique Transaction Count', value=instructionType['transaction.signature'], inline=False)
-        embed.add_embed_field(name='TPS', value=str(solana_tps), inline=False)
+    # create embed object for webhook
+    embed = DiscordEmbed(title='Keeper Alert - Low Transaction Throughput', color='DE2900')
 
-        # add embed object to webhook
-        webhook.add_embed(embed)
+    # create embed description
+    embed.set_description("Contribute to the community with some dissipation. Start a keeper to decentralize and increase capacity for the Entropy market by [starting an Entropy Keeper today](https://github.com/Friktion-Labs/entropy-keeper).")
 
-        response = webhook.execute()
+    # add fields to embed
+    embed.add_embed_field(name='Period Start', value='{} UTC'.format(after), inline=False)
+    embed.add_embed_field(name='Period End', value='{} UTC'.format(before), inline=False)
+    embed.add_embed_field(name='Instruction Type - Unique Txn Count', value=instruction_type_list, inline=False)
+    embed.add_embed_field(name='Solana TPS', value=str(solana_tps), inline=False)
+
+    # add embed object to webhook
+    webhook.add_embed(embed)
+
+    response = webhook.execute()
 
