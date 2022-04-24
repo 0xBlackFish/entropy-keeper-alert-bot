@@ -118,10 +118,17 @@ else:
     ((instruction_type_counts['transaction.signature'] < 150) & (instruction_type_counts['instruction_type'] == 'ConsumeEvents'))
     ].iterrows():
 
-        if index == 0:
-            instruction_type_list += instructionType['instruction_type'] + ' - ' + str(instructionType['transaction.signature'])
+        if len(instruction_type_counts[
+    ((instruction_type_counts['transaction.signature'] < 50) & (instruction_type_counts['instruction_type'].isin(['UpdateRootBank','CacheRootBanks','CachePerpMarkets','CachePrices','UpdateFunding']))) |
+    ((instruction_type_counts['transaction.signature'] < 150) & (instruction_type_counts['instruction_type'] == 'ConsumeEvents'))
+    ]) == 1:
+            instruction_type_list = instructionType['instruction_type'] + ' - ' + str(instructionType['transaction.signature'])
+        
         else:
-            instruction_type_list += ', ' + instructionType['instruction_type'] + ' - ' + str(instructionType['transaction.signature'])
+            if index == 0:
+                instruction_type_list += instructionType['instruction_type'] + ' - ' + str(instructionType['transaction.signature'])
+            else:
+                instruction_type_list += ', ' + instructionType['instruction_type'] + ' - ' + str(instructionType['transaction.signature'])
 
 
     # establish webhook
