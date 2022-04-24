@@ -49,6 +49,10 @@ def run_query(query, retries=10):
         return request.json()
 
 
+# call solana tps from entropy endpoint
+response = requests.get("https://stats.entropy.trade/tps")
+solana_tps = response.json()['tps']
+
 # read webhook url from environment
 url = os.getenv('DISCORD_WEBHOOK_KEEPER_ALERT')
 
@@ -108,16 +112,17 @@ else:
         webhook = DiscordWebhook(url=url, rate_limit_retry=True)
 
         # create embed object for webhook
-        embed = DiscordEmbed(title='Keeper Alert - Low Transaction', color='DE2900')
+        embed = DiscordEmbed(title='Keeper Alert - Low Transaction Throughput', color='DE2900')
 
         # create embed description
-        embed.set_description("Contribute to the community with some dissipation. Start a keeper to decentralize and increase capacity for the Entropy market by [starting an Entropy Keeper today].(https://github.com/Friktion-Labs/entropy-keeper)")
+        embed.set_description("Contribute to the community with some dissipation. Start a keeper to decentralize and increase capacity for the Entropy market by [starting an Entropy Keeper today](https://github.com/Friktion-Labs/entropy-keeper).")
 
         # add fields to embed
         embed.add_embed_field(name='Period Start', value='{} UTC'.format(after), inline=False)
         embed.add_embed_field(name='Period End', value='{} UTC'.format(before), inline=False)
         embed.add_embed_field(name='Instruction Type', value=instructionType['instruction_type'], inline=False)
         embed.add_embed_field(name='Unique Transaction Count', value=instructionType['transaction.signature'], inline=False)
+        embed.add_embed_field(name='TPS', value=str(solana_tps), inline=False)
 
         # add embed object to webhook
         webhook.add_embed(embed)
