@@ -74,11 +74,11 @@ df = pd.json_normalize(result['data']['solana']['instructions'])
 
 # define mapper for base58 codes to instruction types
 instruction_type_dict = {
-    '5QCjNa7' : 'CancelAllPerpOrders',
+    '5QCjN' : 'CancelAllPerpOrders',
     'BNuyR' : 'CachePrices',
     'BcYfW' : 'PlacePerpOrder',
     'CruFm' : 'CacheRootBanks',
-    'HRDyPWbTbhncfXxK' : 'ConsumeEvents',
+    'HRDyP' : 'ConsumeEvents',
     'QioWX' : 'CachePerpMarkets',
     'SCnns' : 'UpdateFunding',
     'Y8jvF' : 'UpdateRootBank',
@@ -87,8 +87,13 @@ instruction_type_dict = {
 
 
 # add new columns to dataframe to enable simple grouping by instruction type
-df['data.base58_trunc'] = df['data.base58'].apply(lambda x: x if x[:5] != 'BcYfW' else 'BcYfW')
-df['instruction_type'] = df['data.base58_trunc'].apply(lambda x: instruction_type_dict[x])
+df['data.base58_trunc'] = df['data.base58'].apply(lambda x: x[:5])
+    
+try:
+    df['instruction_type'] = df['data.base58_trunc'].apply(lambda x: instruction_type_dict[x])
+except:
+    df['instruction_type'] = 'other'
+
 instruction_type_counts = df[df['instruction_type'].isin(
     [
         'UpdateRootBank',
