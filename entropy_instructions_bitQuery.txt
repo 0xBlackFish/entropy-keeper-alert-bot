@@ -1,7 +1,8 @@
 query MyQuery {
   solana(network: solana) {
     instructions: instructions(
-      time: {after: "%s", before: "%s"}
+      success: {is: true}
+      time: {after: "%s", till: "%s"}
       programId: {is: "FcfzrnurPFXwxbx332wScnD5P86DwhpLpBbQsnr6LcH5"}
     ) {
       program {
