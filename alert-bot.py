@@ -112,8 +112,8 @@ instruction_type_list = ''
 
 # reduce df to only offending instruction types
 instruction_type_counts_reduced = instruction_type_counts[
-    ((instruction_type_counts['transaction.signature'] < 50) & (instruction_type_counts['instruction_type'].isin(['UpdateRootBank','CacheRootBanks','CachePerpMarkets','CachePrices','UpdateFunding']))) |
-    ((instruction_type_counts['transaction.signature'] < 150) & (instruction_type_counts['instruction_type'] == 'ConsumeEvents'))
+    ((instruction_type_counts['transaction.signature'] < 60) & (instruction_type_counts['instruction_type'].isin(['UpdateRootBank','CacheRootBanks','CachePerpMarkets','CachePrices','UpdateFunding']))) |
+    ((instruction_type_counts['transaction.signature'] < 200) & (instruction_type_counts['instruction_type'] == 'ConsumeEvents'))
     ]
 
 
